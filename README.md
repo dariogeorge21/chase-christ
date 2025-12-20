@@ -1,36 +1,98 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# JAAGO — Rise & React | Chase Christ
 
-## Getting Started
+A faith-inspired reaction game built for church events. Test your reflexes and faith by tapping positive cards while avoiding negative ones!
 
-First, run the development server:
+## 🎮 Game Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **90-second gameplay** with progressive difficulty
+- **Voice input** for player name (with fallback)
+- **Dynamic card spawning** with random shapes and colors
+- **Security code verification** system
+- **Real-time leaderboard** with Supabase
+- **Smooth animations** with Framer Motion
+- **Faith-themed design** with biblical quotes
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Quick Start
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Prerequisites
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Node.js 18+ installed
+- A Supabase account (free tier works)
 
-## Learn More
+### Installation
 
-To learn more about Next.js, take a look at the following resources:
+1. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. **Set up Supabase**
+   - Follow instructions in `SUPABASE_SETUP.md`
+   - Create a Supabase project
+   - Run the SQL schema
+   - Enable Realtime on the `game_scores` table
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. **Configure environment variables**
+   - Update `.env.local` with your Supabase credentials:
+     ```
+     NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+     NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+     ```
 
-## Deploy on Vercel
+4. **Run the development server**
+   ```bash
+   npm run dev
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+5. **Open the game**
+   - Navigate to [http://localhost:3000](http://localhost:3000)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📱 Game Flow
+
+1. **Landing Page** (`/`) - Animated biblical quotes and start button
+2. **Player Input** (`/input`) - Voice input for name, age and location selection
+3. **Pre-Game Ritual** (`/prepare`) - Motivational messages, security code display, countdown
+4. **Gameplay** (`/game`) - 90 seconds of card-tapping action
+5. **Verification** (`/verify`) - Security code verification or Hail Mary penance
+6. **Results** (`/results`) - Score reveal with performance message
+7. **Leaderboard** (`/score`) - Real-time top scores
+
+## 🎯 Game Rules
+
+- **Positive cards** (Jesus/Lord/Christ/God): +5 points
+- **Negative cards** (Satan/Devil/Evil): -5 points + 1 strike
+- **Game ends when**:
+  - 90 seconds elapse, OR
+  - Player taps 3 negative cards
+- **Difficulty increases** over time:
+  - Spawn rate: 2s → 0.5s
+  - Card lifespan: 3s → 1s
+
+## 🛠️ Tech Stack
+
+- **Framework**: Next.js 14+ (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS v4
+- **Animations**: Framer Motion
+- **State Management**: Zustand
+- **Database**: Supabase (PostgreSQL + Realtime)
+
+## 🔧 Troubleshooting
+
+### Voice input not working
+- Ensure you're using Chrome, Edge, or Safari
+- Check microphone permissions
+- Use HTTPS in production (required for Web Speech API)
+
+### Supabase connection errors
+- Verify environment variables are set correctly
+- Check Supabase project is active
+- Ensure Realtime is enabled on `game_scores` table
+
+## 📝 Leaderboard Reset
+
+Default password: `JAAGO2024`
+
+---
+
+**May your reflexes be swift and your faith be strong!** ✝️
