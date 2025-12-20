@@ -1,65 +1,119 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+
+const BIBLICAL_QUOTES = [
+  "Be watchful, stand firm in the faith, act like men, be strong. — 1 Corinthians 16:13",
+  "I can do all things through Christ who strengthens me. — Philippians 4:13",
+  "The Lord is my strength and my shield. — Psalm 28:7",
+  "Be strong and courageous. Do not be afraid. — Joshua 1:9",
+];
+
+export default function LandingPage() {
+  const router = useRouter();
+  const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentQuoteIndex((prev) => (prev + 1) % BIBLICAL_QUOTES.length);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900">
+      {/* Animated Background Quotes */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentQuoteIndex}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 0.1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 1 }}
+            className="text-white text-4xl md:text-6xl font-bold text-center px-8 max-w-5xl"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+            {BIBLICAL_QUOTES[currentQuoteIndex]}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {/* Main Content */}
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4">
+        {/* Hero Image/Icon */}
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="mb-8"
+        >
+          <div className="w-32 h-32 md:w-48 md:h-48 bg-gradient-to-br from-yellow-300 to-yellow-500 rounded-full flex items-center justify-center shadow-2xl">
+            <span className="text-6xl md:text-8xl">✝️</span>
+          </div>
+        </motion.div>
+
+        {/* Title */}
+        <motion.h1
+          initial={{ y: 30, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="text-5xl md:text-7xl font-bold text-white text-center mb-4"
+        >
+          JAAGO
+        </motion.h1>
+
+        <motion.h2
+          initial={{ y: 30, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
+          className="text-2xl md:text-4xl font-semibold text-yellow-300 text-center mb-6"
+        >
+          Rise & React
+        </motion.h2>
+
+        {/* Subtitle */}
+        <motion.p
+          initial={{ y: 30, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.8 }}
+          className="text-lg md:text-xl text-white/90 text-center max-w-2xl mb-12 px-4"
+        >
+          Test your reflexes and faith! Tap the positive cards, avoid the negative ones.
+          <br />
+          Chase Christ with speed and precision!
+        </motion.p>
+
+        {/* CTA Button */}
+        <motion.button
+          initial={{ y: 30, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.8, delay: 1 }}
+          whileHover={{ scale: 1.05, boxShadow: "0 0 30px rgba(255, 215, 0, 0.5)" }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => router.push("/input")}
+          className="px-12 py-6 bg-gradient-to-r from-yellow-400 to-yellow-600 text-gray-900 text-2xl font-bold rounded-full shadow-2xl hover:from-yellow-300 hover:to-yellow-500 transition-all duration-300"
+        >
+          Start Game
+        </motion.button>
+
+        {/* Footer Note */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 1.2 }}
+          className="mt-12 text-white/60 text-sm text-center"
+        >
+          A faith-inspired game for church events
+        </motion.p>
+      </div>
+
+      {/* Decorative Elements */}
+      <div className="absolute top-10 left-10 text-white/20 text-6xl animate-pulse">✨</div>
+      <div className="absolute bottom-10 right-10 text-white/20 text-6xl animate-pulse delay-1000">🕊️</div>
+      <div className="absolute top-1/2 right-20 text-white/20 text-4xl animate-bounce">⭐</div>
     </div>
   );
 }
