@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Orbitron, Rajdhani } from "next/font/google";
@@ -15,28 +15,41 @@ const Confetti = () => {
   const shapes = ["circle", "cross", "star"];
   const colors = ["#FACC15", "#FFFFFF", "#60A5FA", "#F472B6"];
   
+  // Memoize particles to prevent recreation on every render
+  const particles = useMemo(() => 
+    Array.from({ length: 40 }).map(() => ({
+      startX: Math.random() * 100,
+      endX: Math.random() * 100,
+      scale: Math.random() * 0.5 + 0.5,
+      duration: 4 + Math.random() * 3,
+      delay: Math.random() * 5,
+      xWiggle: (Math.random() - 0.5) * 20,
+    })),
+    []
+  );
+  
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      {Array.from({ length: 40 }).map((_, i) => {
+    <div className="fixed inset-0 pointer-events-none overflow-hidden">
+      {particles.map((particle, i) => {
         const shape = shapes[i % shapes.length];
         const color = colors[i % colors.length];
         return (
           <motion.div
             key={i}
-            initial={{ y: -20, x: `${Math.random() * 100}%`, opacity: 1, scale: Math.random() * 0.5 + 0.5 }}
+            initial={{ y: -20, x: `${particle.startX}%`, opacity: 1, scale: particle.scale }}
             animate={{ 
               y: "110vh", 
-              x: `${(Math.random() * 100) + (Math.random() - 0.5) * 10}%`,
+              x: `${particle.endX + particle.xWiggle}%`,
               rotate: 720 
             }}
             transition={{ 
-              duration: 4 + Math.random() * 3, 
+              duration: particle.duration, 
               repeat: Infinity, 
               ease: "linear",
-              delay: Math.random() * 5 
+              delay: particle.delay 
             }}
-            className="absolute"
-            style={{ color }}
+            className="fixed"
+            style={{ color, left: `${particle.startX}%`, top: "-20px" }}
           >
             {shape === "cross" && <span className="text-xl">†</span>}
             {shape === "circle" && <div className="w-2 h-2 rounded-full bg-current" />}
