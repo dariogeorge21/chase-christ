@@ -1,11 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { Orbitron, Rajdhani } from "next/font/google";
 import { getLeaderboard, resetLeaderboard, supabase } from "@/lib/supabase";
 import { GameScore } from "@/lib/types";
 import { useAppStore } from "@/lib/store";
+
+const orbitron = Orbitron({ subsets: ["latin"], weight: ["400", "700", "900"] });
+const rajdhani = Rajdhani({ subsets: ["latin"], weight: ["500", "700"] });
 
 export default function LeaderboardPage() {
   const router = useRouter();
@@ -18,18 +22,13 @@ export default function LeaderboardPage() {
 
   useEffect(() => {
     loadScores();
-
-    // Subscribe to realtime updates
     const channel = supabase
       .channel("game_scores_changes")
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "game_scores" }, () => {
         loadScores();
       })
       .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    return () => { supabase.removeChannel(channel); };
   }, []);
 
   const loadScores = async () => {
@@ -40,162 +39,209 @@ export default function LeaderboardPage() {
   };
 
   const handleReset = async () => {
-    // Simple password protection (in production, use proper auth)
     if (resetPassword === "jaago") {
       const { success } = await resetLeaderboard();
       if (success) {
         setScores([]);
         setShowResetConfirm(false);
         setResetPassword("");
-        alert("Leaderboard reset successfully!");
-      } else {
-        alert("Failed to reset leaderboard");
       }
-    } else {
-      alert("Incorrect password!");
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-indigo-900 py-8 px-4">
-      <div className="max-w-6xl mx-auto">
+    <div className={`relative min-h-screen bg-[#050510] py-12 px-4 overflow-x-hidden ${rajdhani.className}`}>
+      
+      {/* --- BACKGROUND ELEMENTS --- */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_#1e1b4b_0%,_#050510_100%)]" />
+        {/* Floating Particles */}
+        {[...Array(15)].map((_, i) => (
+          <motion.div
+            key={i}
+            animate={{ y: [-20, -1200], opacity: [0, 0.3, 0], x: [0, Math.random() * 50] }}
+            transition={{ duration: 10 + Math.random() * 10, repeat: Infinity, ease: "linear" }}
+            className="absolute w-1 h-1 bg-white rounded-full blur-[1px]"
+            style={{ left: `${Math.random() * 100}%`, bottom: "-5%" }}
+          />
+        ))}
+      </div>
+
+      <div className="relative z-10 max-w-5xl mx-auto">
+        {/* Header Section */}
         <motion.div
-          initial={{ y: -30, opacity: 0 }}
+          initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="text-center mb-8"
+          className="text-center mb-16"
         >
-          <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">🏆 Leaderboard 🏆</h1>
-          <p className="text-white/70 text-xl">Top Faithful Servants</p>
+          <motion.div
+            animate={{ scale: [1, 1.1, 1], rotate: [0, 5, -5, 0] }}
+            transition={{ duration: 4, repeat: Infinity }}
+            className="inline-block text-6xl mb-4"
+          >
+            🏆
+          </motion.div>
+          <h1 className={`text-5xl md:text-7xl font-black text-white tracking-tighter italic ${orbitron.className}`}>
+            HALL OF LIGHT
+          </h1>
+          <div className="h-1 w-24 bg-yellow-400 mx-auto rounded-full mt-4 shadow-[0_0_20px_#eab308]" />
         </motion.div>
 
         {loading ? (
-          <div className="flex justify-center items-center py-20">
-            <div className="w-16 h-16 border-4 border-white/20 border-t-white rounded-full animate-spin"></div>
+          <div className="flex flex-col justify-center items-center py-20">
+            <motion.div 
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              className="w-16 h-16 border-t-4 border-yellow-400 border-r-4 border-transparent rounded-full shadow-[0_0_15px_#eab308]"
+            />
+            <p className="mt-6 text-white/40 tracking-widest uppercase text-sm animate-pulse">Consulting the Scrolls...</p>
           </div>
-        ) : scores.length === 0 ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-20"
-          >
-            <p className="text-white/60 text-2xl">No scores yet. Be the first to play!</p>
-          </motion.div>
         ) : (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="bg-white/10 backdrop-blur-lg rounded-3xl overflow-hidden border-2 border-white/20"
+            className="bg-white/[0.02] backdrop-blur-3xl rounded-[2.5rem] border border-white/10 overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.5)]"
           >
-            {/* Table Header */}
-            <div className="grid grid-cols-6 gap-4 p-4 bg-white/5 border-b border-white/20 font-bold text-white text-sm md:text-base">
+            {/* Legend Header */}
+            <div className="grid grid-cols-6 gap-4 p-6 bg-white/5 border-b border-white/10 text-white/40 font-bold uppercase tracking-widest text-[10px] md:text-xs">
               <div className="text-center">Rank</div>
-              <div>Name</div>
-              <div className="text-center">Age</div>
-              <div>Location</div>
-              <div className="text-center">Score</div>
+              <div className="col-span-2">Servant</div>
+              <div className="text-center">Origin</div>
+              <div className="text-center">Glory</div>
               <div className="text-center">Strikes</div>
             </div>
 
-            {/* Table Body */}
-            <div className="divide-y divide-white/10">
-              {scores.map((score, index) => {
-                const isCurrentPlayer = playerData && score.player_name === playerData.name;
-                const rankColor =
-                  index === 0 ? "text-yellow-400" : index === 1 ? "text-gray-300" : index === 2 ? "text-orange-400" : "text-white";
+            {/* List Body */}
+            <div className="max-h-[60vh] overflow-y-auto custom-scrollbar">
+              <AnimatePresence>
+                {scores.map((score, index) => {
+                  const isCurrentPlayer = playerData && score.player_name === playerData.name;
+                  const isTopThree = index < 3;
+                  const rankColors = ["text-yellow-400", "text-slate-300", "text-amber-600"];
 
-                return (
-                  <motion.div
-                    key={score.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    className={`grid grid-cols-6 gap-4 p-4 text-white text-sm md:text-base ${
-                      isCurrentPlayer ? "bg-green-500/20 border-l-4 border-green-400" : ""
-                    }`}
-                  >
-                    <div className={`text-center font-bold text-xl ${rankColor}`}>
-                      {index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : index + 1}
-                    </div>
-                    <div className="font-semibold truncate">{score.player_name}</div>
-                    <div className="text-center">{score.player_age}</div>
-                    <div className="truncate text-sm">{score.player_location}</div>
-                    <div className="text-center font-bold text-yellow-400">{score.final_score}</div>
-                    <div className="text-center text-red-400">{score.negative_cards_tapped}</div>
-                  </motion.div>
-                );
-              })}
+                  return (
+                    <motion.div
+                      key={score.id}
+                      initial={{ opacity: 0, x: -30 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.08, type: "spring", stiffness: 100 }}
+                      whileHover={{ backgroundColor: "rgba(255,255,255,0.05)", scale: 1.01 }}
+                      className={`grid grid-cols-6 gap-4 p-5 items-center transition-all border-b border-white/5 ${
+                        isCurrentPlayer ? "bg-emerald-500/10 border-l-4 border-l-emerald-400" : ""
+                      }`}
+                    >
+                      <div className={`text-center font-black text-2xl ${orbitron.className} ${isTopThree ? rankColors[index] : "text-white/20"}`}>
+                        {index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : index + 1}
+                      </div>
+                      
+                      <div className="col-span-2 flex flex-col">
+                        <span className="text-white font-bold text-lg md:text-xl truncate flex items-center gap-2">
+                          {score.player_name}
+                          {isCurrentPlayer && (
+                            <span className="text-[10px] bg-emerald-500 text-white px-2 py-0.5 rounded-full animate-pulse">YOU</span>
+                          )}
+                        </span>
+                        <span className="text-white/30 text-xs">Age: {score.player_age}</span>
+                      </div>
+
+                      <div className="text-center text-white/60 text-sm truncate">{score.player_location}</div>
+                      
+                      <div className={`text-center font-black text-xl md:text-2xl ${orbitron.className} ${isTopThree ? "text-yellow-400" : "text-white"}`}>
+                        {score.final_score}
+                      </div>
+
+                      <div className="text-center">
+                        <div className="inline-flex gap-1">
+                          {[...Array(3)].map((_, i) => (
+                            <div key={i} className={`w-2 h-2 rounded-full ${i < score.negative_cards_tapped ? "bg-red-500 shadow-[0_0_8px_red]" : "bg-white/10"}`} />
+                          ))}
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
             </div>
           </motion.div>
         )}
 
-        {/* Buttons */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="flex flex-col sm:flex-row gap-4 justify-center mt-8"
-        >
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row gap-6 justify-center mt-12">
           <motion.button
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.05, y: -5 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => router.push("/")}
-            className="px-8 py-4 bg-gradient-to-r from-blue-400 to-blue-600 text-white text-xl font-bold rounded-full shadow-lg"
+            className="px-12 py-5 bg-white text-gray-950 text-xl font-black rounded-2xl shadow-[0_10px_30px_rgba(255,255,255,0.1)] flex items-center gap-3"
           >
-            Back to Home
+            <span>←</span> RETURN TO HOME
           </motion.button>
+          
           <motion.button
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.05, y: -5 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setShowResetConfirm(true)}
-            className="px-8 py-4 bg-gradient-to-r from-red-400 to-red-600 text-white text-xl font-bold rounded-full shadow-lg"
+            className="px-8 py-5 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 text-lg font-bold rounded-2xl transition-all"
           >
-            Reset Leaderboard
+            RESET TEMPLE SCROLLS
           </motion.button>
-        </motion.div>
+        </div>
+      </div>
 
-        {/* Reset Confirmation Modal */}
+      {/* Reset Confirmation Modal */}
+      <AnimatePresence>
         {showResetConfirm && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-4"
-            onClick={() => setShowResetConfirm(false)}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-[#050510]/95 backdrop-blur-md flex items-center justify-center z-[100] px-4"
           >
             <motion.div
-              initial={{ scale: 0.8 }}
-              animate={{ scale: 1 }}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 max-w-md w-full border-2 border-white/20"
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              className="bg-white/[0.05] border border-white/10 rounded-[2.5rem] p-10 max-w-md w-full text-center shadow-[0_0_50px_rgba(0,0,0,1)]"
             >
-              <h2 className="text-3xl font-bold text-white mb-4">Reset Leaderboard</h2>
-              <p className="text-white/80 mb-6">Enter password to reset all scores:</p>
+              <div className="text-red-500 text-5xl mb-6">⚠️</div>
+              <h2 className={`text-2xl font-black text-white mb-2 ${orbitron.className}`}>PURGE RECORDS?</h2>
+              <p className="text-white/50 mb-8 uppercase tracking-widest text-xs">Enter High Priest Password</p>
+              
               <input
                 type="password"
                 value={resetPassword}
                 onChange={(e) => setResetPassword(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg bg-white/20 text-white border-2 border-white/30 mb-6 text-lg"
-                placeholder="Password"
+                className="w-full px-6 py-4 rounded-xl bg-white/5 text-white border border-white/10 mb-8 text-center text-2xl focus:outline-none focus:border-yellow-400 transition-colors"
+                placeholder="••••"
               />
+              
               <div className="flex gap-4">
                 <button
                   onClick={() => setShowResetConfirm(false)}
-                  className="flex-1 px-6 py-3 bg-gray-500 text-white rounded-lg font-semibold"
+                  className="flex-1 py-4 text-white/40 font-bold uppercase tracking-widest hover:text-white transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleReset}
-                  className="flex-1 px-6 py-3 bg-red-500 text-white rounded-lg font-semibold"
+                  className="flex-1 py-4 bg-red-500 text-white rounded-xl font-black shadow-[0_10px_20px_rgba(239,68,68,0.3)]"
                 >
-                  Reset
+                  PURGE
                 </button>
               </div>
             </motion.div>
           </motion.div>
         )}
-      </div>
+      </AnimatePresence>
+
+      <style jsx global>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.02);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 10px;
+        }
+      `}</style>
     </div>
   );
 }
-
