@@ -34,14 +34,14 @@ export default function LandingPage() {
       </div>
 
       {/* Animated Background Quotes (Ethereal) */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
-        <AnimatePresence mode="wait">
+      <div className="absolute inset-0 bottom-0 flex items-center justify-center pointer-events-none z-0">
+        <AnimatePresence>
           <motion.div
             key={currentQuoteIndex}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 0.07, scale: 1 }}
             exit={{ opacity: 0, scale: 1.05 }}
-            transition={{ duration: 1.5, ease: "easeInOut" }}
+            transition={{ duration: 1.5 }}
             className="text-white text-3xl md:text-5xl lg:text-7xl font-serif italic text-center px-10 max-w-6xl leading-tight"
           >
             {BIBLICAL_QUOTES[currentQuoteIndex]}
