@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useAppStore } from "@/lib/store";
 import { INDIAN_STATES, AGE_RANGE } from "@/lib/types";
@@ -24,104 +24,159 @@ export default function InputPage() {
     }
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.15 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    show: { y: 0, opacity: 1 }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 py-8 px-4">
-      <div className="max-w-6xl mx-auto">
-        <motion.h1
-          initial={{ y: -30, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="text-4xl md:text-5xl font-bold text-white text-center mb-8"
-        >
-          Player Information
-        </motion.h1>
+    <div className="relative min-h-screen w-full overflow-x-hidden bg-[#0a0a1a] flex flex-col items-center py-12 px-4">
+      
+      {/* --- BACKGROUND DECOR (Consistent with Landing) --- */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-purple-600/10 blur-[120px]" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-600/10 blur-[120px]" />
+      </div>
 
-        {/* Voice Input for Name */}
-        <motion.div
-          initial={{ y: 30, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="mb-8 flex justify-center"
-        >
-          <VoiceInput onNameCapture={setName} currentName={name} />
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+        className="relative z-10 w-full max-w-5xl"
+      >
+        {/* Header Section */}
+        <motion.div variants={itemVariants} className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-2">
+            Player Profile
+          </h1>
+          <p className="text-white/40 uppercase tracking-[0.2em] text-sm">Step 1: Identification</p>
         </motion.div>
 
-        {/* Age Selection */}
-        <motion.div
-          initial={{ y: 30, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="mb-8"
+        {/* Main Glass Form Container */}
+        <div className="bg-white/[0.02] border border-white/10 backdrop-blur-2xl rounded-[2.5rem] p-6 md:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.3)]">
+          
+          {/* 1. Voice Input Section */}
+          <motion.section variants={itemVariants} className="mb-14">
+            <div className="flex flex-col items-center">
+              <span className="text-yellow-400/80 text-xs font-bold uppercase tracking-widest mb-4">Identity</span>
+              <div className="p-1 rounded-full bg-gradient-to-r from-white/5 to-white/10 border border-white/10">
+                <VoiceInput onNameCapture={setName} currentName={name} />
+              </div>
+              <p className="mt-4 text-white/50 text-sm">Speak or click the mic to enter your name</p>
+            </div>
+          </motion.section>
+
+          {/* 2. Age Selection */}
+          <motion.section variants={itemVariants} className="mb-14">
+            <h2 className="text-xl font-semibold text-white mb-6 flex items-center justify-center gap-3">
+              <span className="h-px w-8 bg-white/20" />
+              Select Your Age
+              <span className="h-px w-8 bg-white/20" />
+            </h2>
+            <div className="flex flex-wrap justify-center gap-3 max-w-4xl mx-auto">
+              {AGE_RANGE.map((ageValue) => (
+                <button
+                  key={ageValue}
+                  onClick={() => setAge(ageValue)}
+                  className={`relative min-w-[50px] h-[50px] rounded-xl font-bold transition-all duration-300 overflow-hidden border ${
+                    age === ageValue
+                      ? "bg-yellow-400 text-gray-950 border-yellow-300 shadow-[0_0_20px_rgba(234,179,8,0.4)] scale-110"
+                      : "bg-white/5 text-white border-white/5 hover:border-white/20 hover:bg-white/10"
+                  }`}
+                >
+                  {ageValue}
+                </button>
+              ))}
+            </div>
+          </motion.section>
+
+          {/* 3. Location Selection */}
+          <motion.section variants={itemVariants} className="mb-6">
+            <h2 className="text-xl font-semibold text-white mb-6 flex items-center justify-center gap-3">
+              <span className="h-px w-8 bg-white/20" />
+              Your State
+              <span className="h-px w-8 bg-white/20" />
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+              {INDIAN_STATES.map((state) => (
+                <button
+                  key={state}
+                  onClick={() => setLocation(state)}
+                  className={`px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 border ${
+                    location === state
+                      ? "bg-white text-gray-950 border-white shadow-[0_0_25px_rgba(255,255,255,0.2)]"
+                      : "bg-white/5 text-white/70 border-white/5 hover:border-white/20 hover:bg-white/10"
+                  }`}
+                >
+                  {state}
+                </button>
+              ))}
+            </div>
+          </motion.section>
+        </div>
+
+        {/* Continue Button Area */}
+        <motion.div 
+          variants={itemVariants}
+          className="flex flex-col items-center mt-12"
         >
-          <h2 className="text-2xl font-semibold text-white mb-4 text-center">Select Your Age</h2>
-          <div className="grid grid-cols-5 md:grid-cols-10 gap-3 max-w-4xl mx-auto">
-            {AGE_RANGE.map((ageValue) => (
-              <motion.button
-                key={ageValue}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setAge(ageValue)}
-                className={`py-3 px-4 rounded-lg font-bold text-lg transition-all ${
-                  age === ageValue
-                    ? "bg-yellow-400 text-gray-900 shadow-lg scale-110"
-                    : "bg-white/20 text-white hover:bg-white/30"
-                }`}
+          <AnimatePresence mode="wait">
+            {!isValid && (
+              <motion.p 
+                initial={{ opacity: 0 }} 
+                animate={{ opacity: 1 }} 
+                exit={{ opacity: 0 }}
+                className="text-white/30 text-sm mb-4 italic"
               >
-                {ageValue}
-              </motion.button>
-            ))}
-          </div>
-        </motion.div>
+                Please complete all fields to proceed
+              </motion.p>
+            )}
+          </AnimatePresence>
 
-        {/* Location Selection */}
-        <motion.div
-          initial={{ y: 30, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="mb-8"
-        >
-          <h2 className="text-2xl font-semibold text-white mb-4 text-center">Select Your State</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-5xl mx-auto">
-            {INDIAN_STATES.map((state) => (
-              <motion.button
-                key={state}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setLocation(state)}
-                className={`py-4 px-4 rounded-lg font-semibold transition-all ${
-                  location === state
-                    ? "bg-yellow-400 text-gray-900 shadow-lg"
-                    : "bg-white/20 text-white hover:bg-white/30"
-                }`}
-              >
-                {state}
-              </motion.button>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Continue Button */}
-        <motion.div
-          initial={{ y: 30, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.8 }}
-          className="flex justify-center mt-12"
-        >
-          <motion.button
-            whileHover={isValid ? { scale: 1.05 } : {}}
-            whileTap={isValid ? { scale: 0.95 } : {}}
+          <button
             onClick={handleContinue}
             disabled={!isValid}
-            className={`px-16 py-5 rounded-full text-2xl font-bold transition-all ${
+            className={`group relative px-20 py-5 rounded-2xl text-xl font-black transition-all duration-500 overflow-hidden ${
               isValid
-                ? "bg-gradient-to-r from-green-400 to-green-600 text-white shadow-2xl cursor-pointer"
-                : "bg-gray-500 text-gray-300 cursor-not-allowed"
+                ? "bg-gradient-to-r from-emerald-400 via-green-500 to-emerald-600 text-gray-950 shadow-[0_10px_40px_rgba(16,185,129,0.3)] cursor-pointer"
+                : "bg-white/5 text-white/20 border border-white/5 cursor-not-allowed"
             }`}
           >
-            Continue
-          </motion.button>
+            {/* Shimmer for active button */}
+            {isValid && (
+              <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
+            )}
+            <span className="relative z-10 flex items-center gap-2">
+              CONTINUE {isValid && <motion.span animate={{ x: [0, 5, 0] }} transition={{ repeat: Infinity }}>→</motion.span>}
+            </span>
+          </button>
         </motion.div>
-      </div>
+      </motion.div>
+
+      <style jsx global>{`
+        @keyframes shimmer {
+          100% { transform: translateX(100%); }
+        }
+        /* Custom scrollbar for better aesthetics if needed */
+        ::-webkit-scrollbar {
+          width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 10px;
+        }
+      `}</style>
     </div>
   );
 }
-
