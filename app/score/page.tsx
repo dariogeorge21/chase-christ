@@ -41,7 +41,7 @@ export default function LeaderboardPage() {
 
   const handleReset = async () => {
     // Simple password protection (in production, use proper auth)
-    if (resetPassword === "JAAGO2024") {
+    if (resetPassword === "jaago") {
       const { success } = await resetLeaderboard();
       if (success) {
         setScores([]);
