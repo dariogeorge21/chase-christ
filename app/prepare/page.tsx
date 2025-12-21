@@ -43,15 +43,19 @@ export default function PreparePage() {
         setLocalSecurityCode(code);
         setSecurityCode(code);
         setStage("code");
-
-        // Show code for 3 seconds then redirect to game
-        const codeTimer = setTimeout(() => {
-          router.push("/game");
-        }, 3000);
-        return () => clearTimeout(codeTimer);
       }
     }
   }, [stage, messageIndex, setSecurityCode]);
+
+  useEffect(() => {
+    if (stage === "code") {
+      // Show code for 5 seconds then move to countdown
+      const codeTimer = setTimeout(() => {
+        setStage("countdown");
+      }, 5000);
+      return () => clearTimeout(codeTimer);
+    }
+  }, [stage]);
 
   useEffect(() => {
     if (stage === "countdown") {
