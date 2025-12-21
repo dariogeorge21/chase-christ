@@ -24,6 +24,7 @@ export default function GamePage() {
   const [scorePopups, setScorePopups] = useState<{ id: string; points: number; x: number; y: number }[]>([]);
   const [shake, setShake] = useState(false);
   const gameContainerRef = useRef<HTMLDivElement>(null);
+  const elapsedTimeRef = useRef(0);
 
   // Initialize game
   useEffect(() => {
@@ -35,7 +36,11 @@ export default function GamePage() {
     if (!gameState.isPlaying) return;
 
     const timer = setInterval(() => {
-      setElapsedTime((prev) => prev + 1);
+      setElapsedTime((prev) => {
+        const newTime = prev + 1;
+        elapsedTimeRef.current = newTime;
+        return newTime;
+      });
       setGameState({ timeRemaining: Math.max(0, gameState.timeRemaining - 1) });
 
       // Check end conditions
@@ -54,24 +59,41 @@ export default function GamePage() {
   useEffect(() => {
     if (!gameState.isPlaying) return;
 
-    const spawnCard = () => {
-      if (gameState.cards.length < MAX_CONCURRENT_CARDS && gameContainerRef.current) {
-        const { clientWidth, clientHeight } = gameContainerRef.current;
-        const newCard = generateCard(elapsedTime, clientWidth, clientHeight);
-        addCard(newCard);
+    let spawnTimer: NodeJS.Timeout;
+    let isActive = true;
 
-        // Auto-remove card after lifespan
-        setTimeout(() => {
-          removeCard(newCard.id);
-        }, newCard.lifespan);
-      }
+    const scheduleNextSpawn = () => {
+      if (!isActive) return;
+      
+      const interval = getSpawnInterval(elapsedTimeRef.current);
+      
+      spawnTimer = setTimeout(() => {
+        if (!isActive) return;
+        
+        if (gameContainerRef.current) {
+          const { clientWidth, clientHeight } = gameContainerRef.current;
+          const newCard = generateCard(elapsedTimeRef.current, clientWidth, clientHeight);
+          addCard(newCard);
+
+          // Auto-remove card after lifespan
+          setTimeout(() => {
+            removeCard(newCard.id);
+          }, newCard.lifespan);
+        }
+        
+        // Schedule next spawn
+        scheduleNextSpawn();
+      }, interval);
     };
 
-    const interval = getSpawnInterval(elapsedTime);
-    const spawnTimer = setInterval(spawnCard, interval);
+    // Start spawning immediately
+    scheduleNextSpawn();
 
-    return () => clearInterval(spawnTimer);
-  }, [gameState.isPlaying, gameState.cards.length, elapsedTime, addCard, removeCard]);
+    return () => {
+      isActive = false;
+      if (spawnTimer) clearTimeout(spawnTimer);
+    };
+  }, [gameState.isPlaying, addCard, removeCard]);
 
   const handleCardTap = (cardId: string, type: "positive" | "negative") => {
     const card = gameState.cards.find((c) => c.id === cardId);
