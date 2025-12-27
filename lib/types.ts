@@ -1,7 +1,6 @@
 // Player data types
 export interface PlayerData {
   name: string;
-  age: number;
   location: string;
 }
 
@@ -32,7 +31,6 @@ export interface GameScore {
   id?: string;
   session_id?: string;
   player_name: string;
-  player_age: number;
   player_location: string;
   final_score: number;
   negative_cards_tapped: number;
@@ -74,7 +72,4 @@ export const INDIAN_STATES = [
 ] as const;
 
 export type IndianState = (typeof INDIAN_STATES)[number];
-
-// Age range for selection
-export const AGE_RANGE = Array.from({ length: 20 }, (_, i) => i + 16); // 16-35
 

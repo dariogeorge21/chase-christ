@@ -97,7 +97,6 @@ export default function ResultsPage() {
       const saveScore = async () => {
         await saveGameScore({
           player_name: playerData.name,
-          player_age: playerData.age,
           player_location: playerData.location,
           final_score: finalScore,
           negative_cards_tapped: negativeCards,

@@ -19,7 +19,7 @@ export default function InputPage() {
 
   const handleContinue = () => {
     if (isValid) {
-      setPlayerData({ name, location, age: 0 }); // Provide a default value for age
+      setPlayerData({ name, location });
       router.push("/prepare");
     }
   };

@@ -139,7 +139,6 @@ export default function LeaderboardPage() {
                             <span className="text-[10px] bg-emerald-500 text-white px-2 py-0.5 rounded-full animate-pulse">YOU</span>
                           )}
                         </span>
-                        <span className="text-white/30 text-xs">Age: {score.player_age}</span>
                       </div>
 
                       <div className="text-center text-white/60 text-sm truncate">{score.player_location}</div>
