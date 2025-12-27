@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useAppStore } from "@/lib/store";
 import { INDIAN_STATES } from "@/lib/types";
-import VoiceInput from "@/components/VoiceInput";
+import OnScreenKeyboard from "@/components/OnScreenKeyboard";
 
 export default function InputPage() {
   const router = useRouter();
@@ -13,7 +13,14 @@ export default function InputPage() {
 
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
-  const [useKeyboard, setUseKeyboard] = useState(false);
+
+  const handleKeyPress = (key: string) => {
+    setName(prev => prev + key);
+  };
+
+  const handleBackspace = () => {
+    setName(prev => prev.slice(0, -1));
+  };
 
   const isValid = name.trim() !== "" && location !== "";
 
@@ -70,43 +77,20 @@ export default function InputPage() {
                 Identity
               </span>
 
-              <div className="w-full max-w-md">
-                {!useKeyboard ? (
-                  <>
-                    <VoiceInput
-                      onNameCapture={setName}
-                      currentName={name}
-                    />
-                    <p className="mt-4 text-white/50 text-sm">
-                      Say your name clearly into the microphone
-                    </p>
-
-                    <button
-                      onClick={() => setUseKeyboard(true)}
-                      className="mt-3 text-sm underline text-yellow-400 hover:text-yellow-300"
-                    >
-                      Use Keyboard Instead
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <input
-                      type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="Your name will appear here"
-                      className="w-full px-5 py-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-yellow-400"
-                    />
-
-                    <button
-                      onClick={() => setUseKeyboard(false)}
-                      className="mt-3 text-sm underline text-yellow-400 hover:text-yellow-300"
-                    >
-                      Use Microphone Instead
-                    </button>
-                  </>
-                )}
+              <div className="w-full max-w-md mb-6">
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Your name will appear here"
+                  className="w-full px-5 py-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-yellow-400 text-center text-lg font-medium"
+                />
               </div>
+
+              <OnScreenKeyboard 
+                onKeyPress={handleKeyPress}
+                onBackspace={handleBackspace}
+              />
             </div>
           </motion.section>
 
