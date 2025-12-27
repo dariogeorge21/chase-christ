@@ -29,6 +29,44 @@ export default function GamePage() {
   const [isShaking, setIsShaking] = useState(false);
   const gameContainerRef = useRef<HTMLDivElement>(null);
   const elapsedTimeRef = useRef(0);
+  
+  // Audio refs for sound effects
+  const jesusClickAudioRef = useRef<HTMLAudioElement | null>(null);
+  const devilClickAudioRef = useRef<HTMLAudioElement | null>(null);
+  const gameOverAudioRef = useRef<HTMLAudioElement | null>(null);
+  const gameSuccessAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Initialize audio objects
+  useEffect(() => {
+    jesusClickAudioRef.current = new Audio('/audio/jesus_click.mp3');
+    devilClickAudioRef.current = new Audio('/audio/devil_click.mp3');
+    gameOverAudioRef.current = new Audio('/audio/game_over.mp3');
+    gameSuccessAudioRef.current = new Audio('/audio/game_success.mp3');
+
+    // Preload audio files
+    jesusClickAudioRef.current.preload = 'auto';
+    devilClickAudioRef.current.preload = 'auto';
+    gameOverAudioRef.current.preload = 'auto';
+    gameSuccessAudioRef.current.preload = 'auto';
+
+    // Cleanup function
+    return () => {
+      jesusClickAudioRef.current = null;
+      devilClickAudioRef.current = null;
+      gameOverAudioRef.current = null;
+      gameSuccessAudioRef.current = null;
+    };
+  }, []);
+
+  // Function to play audio with error handling
+  const playAudio = (audioRef: React.RefObject<HTMLAudioElement | null>) => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0; // Reset to beginning
+      audioRef.current.play().catch(error => {
+        console.warn('Audio playback failed:', error);
+      });
+    }
+  };
 
   // --- LOGIC: GAME STATE & TIMERS (Intact) ---
   useEffect(() => {
@@ -73,6 +111,14 @@ export default function GamePage() {
   const handleCardTap = (cardId: string, type: "positive" | "negative") => {
     const card = gameState.cards.find((c) => c.id === cardId);
     if (!card) return;
+    
+    // Play appropriate sound effect
+    if (type === "positive") {
+      playAudio(jesusClickAudioRef);
+    } else {
+      playAudio(devilClickAudioRef);
+    }
+    
     removeCard(cardId);
     const points = type === "positive" ? 5 : -5;
     incrementScore(points);
@@ -87,6 +133,16 @@ export default function GamePage() {
   };
 
   const endGame = () => {
+    // Determine if the game was won (time ran out) or lost (3 negative cards tapped)
+    const isGameWon = gameState.negativeCardsTapped < MAX_NEGATIVE_TAPS;
+    
+    // Play appropriate end game sound
+    if (isGameWon) {
+      playAudio(gameSuccessAudioRef);
+    } else {
+      playAudio(gameOverAudioRef);
+    }
+    
     setGameState({ isPlaying: false });
     router.push("/verify");
   };
