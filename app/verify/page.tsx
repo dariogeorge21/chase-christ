@@ -10,11 +10,11 @@ const orbitron = Orbitron({ subsets: ["latin"], weight: ["400", "700", "900"] })
 const rajdhani = Rajdhani({ subsets: ["latin"], weight: ["500", "700"] });
 
 const HAIL_MARYS = [
-  "Hail Mary, full of grace...",
-  "The Lord is with thee...",
-  "Blessed art thou among women...",
-  "Blessed is the fruit of thy womb...",
-  "Holy Mary, Mother of God..."
+  "Hail Mary 1",
+  "Hail Mary 2",
+  "Hail Mary 3",
+  "Hail Mary 4",
+  "Hail Mary 5"
 ];
 
 export default function VerifyPage() {
