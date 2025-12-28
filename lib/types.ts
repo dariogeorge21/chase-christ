@@ -46,6 +46,7 @@ export const INDIAN_STATES = [
   "Assam",
   "Bihar",
   "Chhattisgarh",
+  "Delhi",
   "Goa",
   "Gujarat",
   "Haryana",
@@ -72,4 +73,5 @@ export const INDIAN_STATES = [
 ] as const;
 
 export type IndianState = (typeof INDIAN_STATES)[number];
+
 
