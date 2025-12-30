@@ -50,13 +50,21 @@ export default function GameCard({ card, onTap }: GameCardProps) {
         clipPath: getShapePath(),
         borderRadius: card.shape === "circle" ? "50%" : "0%",
         cursor: "pointer",
-        boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
+        boxShadow: `
+          0 4px 20px rgba(0,0,0,0.3),
+          0 0 20px ${card.color}80,
+          0 0 40px ${card.color}40,
+          inset 0 0 0 2px rgba(255,255,255,0.3),
+          inset 0 0 0 4px ${card.color}
+        `,
       }}
       className="flex items-center justify-center select-none"
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.9 }}
     >
-      <span className="text-white font-bold text-sm text-center px-2">{getCardLabel(card.type)}</span>
+      <span className="text-black font-bold text-sm text-center px-2 drop-shadow-[0_1px_1px_rgba(255,255,255,0.5)]">
+        {getCardLabel(card.type)}
+      </span>
     </motion.div>
   );
 }
