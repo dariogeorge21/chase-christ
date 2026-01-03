@@ -91,8 +91,9 @@ A faith-inspired reaction game built for church events. Test your reflexes and f
 
 ## 📝 Leaderboard Reset
 
-Default password: `JAAGO2024`
+Default password: `jaago`
 
 ---
 
 **May your reflexes be swift and your faith be strong!** ✝️
+
